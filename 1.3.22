@@ -1,0 +1,159 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       VEX                                                       */
+/*    Created:      Thu Sep 26 2019                                           */
+/*    Description:  Competition Template                                      */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+ 
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// ---- END VEXCODE CONFIGURED DEVICES ----
+ 
+#include "vex.h"
+ 
+using namespace vex;
+ 
+// A global instance of competition
+competition Competition;
+ 
+controller Controller1;
+motor RightFront = motor(PORT19,true);
+motor LeftFront = motor(PORT2);
+motor RightBack = motor(PORT10,true);
+motor LeftBack = motor(PORT20);
+motor Tower = motor(PORT1);
+motor Lift = motor(PORT3);
+motor_group Left = motor_group(LeftFront,LeftBack);
+motor_group Right = motor_group(RightFront,RightBack);
+drivetrain Drivetrain = drivetrain(Left,Right);
+ 
+void DriveForward (){
+  Drivetrain.setDriveVelocity(50, percentUnits::pct);
+ Drivetrain.driveFor(fwd, 36, inches);
+}
+ 
+void DriveReverse () {
+ Drivetrain.setDriveVelocity(65, percentUnits::pct);
+ Drivetrain.driveFor(directionType::rev, 45, distanceUnits::in);
+}
+ 
+void DriveRevShort (){
+ Drivetrain.setDriveVelocity (50, percentUnits::pct);
+ Drivetrain.driveFor(directionType::rev, 20, distanceUnits::in);
+}
+ 
+ void LiftUnfold (){
+   Lift.spinFor(fwd, 4.5, timeUnits::sec);
+ }
+ 
+ void LiftFold (){
+   Lift.spinFor(directionType::rev, 4, timeUnits::sec);
+ }
+ 
+ void TurnSixty (){
+   Drivetrain.turnFor(60, rotationUnits::deg);
+ }
+ 
+ void Turn260 (){
+   Drivetrain.turnFor(turnType::left, 100, rotationUnits::deg);
+ }
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*                                                                           */
+/*  You may want to perform some actions before the competition starts.      */
+/*  Do them in the following function.  You must return from this function   */
+/*  or the autonomous and usercontrol tasks will not be started.  This       */
+/*  function is only called once after the V5 has been powered on and        */
+/*  not every time that the robot is disabled.                               */
+/*---------------------------------------------------------------------------*/
+ 
+void pre_auton(void) {
+ // Initializing Robot Configuration. DO NOT REMOVE!
+ vexcodeInit();
+ 
+ // All activities that occur before the competition starts
+ // Example: clearing encoders, setting servo positions, ...
+}
+ 
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              Autonomous Task                              */
+/*                                                                           */
+/*  This task is used to control your robot during the autonomous phase of   */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
+ 
+void autonomous(void) {
+ LiftUnfold();
+ DriveReverse();
+ LiftFold();
+ DriveRevShort();
+ TurnSixty();
+ DriveForward();
+ Turn260();
+ 
+ 
+}
+ // ..........................................................................
+ 
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              User Control Task                            */
+/*                                                                           */
+/*  This task is used to control your robot during the user control phase of */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
+ 
+void usercontrol(void) {
+ // User control code here, inside the loop
+ while (1) {
+ 
+     LeftFront.spin(directionType::fwd,(Controller1.Axis3.value() + Controller1.Axis4.value()),velocityUnits::pct);
+     LeftBack.spin(directionType::fwd,(Controller1.Axis3.value() + Controller1.Axis4.value()),velocityUnits::pct);
+     RightFront.spin(directionType::fwd,(Controller1.Axis3.value() - Controller1.Axis4.value()),velocityUnits::pct);
+     RightBack.spin(directionType::fwd,(Controller1.Axis3.value() - Controller1.Axis4.value()),velocityUnits::pct);
+    if (Controller1.ButtonL2.pressing()) {
+        Tower.spin(directionType::rev,60,velocityUnits::pct);
+     }
+    else if (Controller1.ButtonL1.pressing()) {
+        Tower.spin(directionType::fwd,60,velocityUnits::pct);
+     }
+     else{
+          Tower.stop(hold);
+     }
+    if (Controller1.ButtonUp.pressing()) {
+        Lift.spin(directionType::rev,60 ,velocityUnits::pct);
+     }
+    else if (Controller1.ButtonDown.pressing()) {
+        Lift.spin(directionType::fwd,60,velocityUnits::pct);
+     }
+    else{
+        Lift.stop(hold);
+    }
+ 
+   wait(20, msec); // Sleep the task for a short amount of time to
+                   // prevent wasted resources.
+ }
+}
+ 
+//
+// Main will set up the competition functions and callbacks.
+//
+int main() {
+ // Set up callbacks for autonomous and driver control periods.
+ Competition.autonomous(autonomous);
+ Competition.drivercontrol(usercontrol);
+ 
+ // Run the pre-autonomous function.
+ pre_auton();
+ 
+ // Prevent main from exiting with an infinite loop.
+ while (true) {
+   wait(100, msec);
+ }
+}
