@@ -22,7 +22,6 @@ motor RightFront = motor(PORT19,true);
 motor LeftFront = motor(PORT2);
 motor RightBack = motor(PORT10,true);
 motor LeftBack = motor(PORT20);
-motor Intake = motor(PORT6);
 motor Tower = motor(PORT1);
 motor Lift = motor(PORT3);
 motor_group Left = motor_group(LeftFront,LeftBack);
@@ -32,21 +31,6 @@ drivetrain Drivetrain = drivetrain(Left,Right);
 void DriveForward (){
   Drivetrain.setDriveVelocity(50, percentUnits::pct);
  Drivetrain.driveFor(fwd, 24, inches);
-}
- 
-void DriveBackwards (){
- Drivetrain.driveFor(fwd, 12, inches);
-  Drivetrain.setDriveVelocity(50, percentUnits::pct);
-}
- 
-void TurnLeft (){
- Drivetrain.turnFor(left, 90, rotationUnits::deg);
-  Drivetrain.setDriveVelocity(50, percentUnits::pct);
-}
- 
-void TurnRight (){
- Drivetrain.turnFor(right, 90, rotationUnits::deg);
-  Drivetrain.setDriveVelocity(50, percentUnits::pct);
 }
  
 /*---------------------------------------------------------------------------*/
@@ -117,10 +101,10 @@ void usercontrol(void) {
           Tower.stop(hold);
      }
     if (Controller1.ButtonUp.pressing()) {
-        Lift.spin(directionType::fwd,60 ,velocityUnits::pct);
+        Lift.spin(directionType::rev,60 ,velocityUnits::pct);
      }
     else if (Controller1.ButtonDown.pressing()) {
-        Lift.spin(directionType::rev,60,velocityUnits::pct);
+        Lift.spin(directionType::fwd,60,velocityUnits::pct);
      }
     else{
         Lift.stop(hold);
